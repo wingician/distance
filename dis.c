@@ -93,7 +93,7 @@ void ShorttestPath(MGraph G, int v0,Pathmatirx *P,ShortPathTable *D)
 
     for(v=1;v<G.numVertexes;v++)
     {
-
+    /*此下面未写完。打算将把此程序改写成python*/
 }
 
 int main()
