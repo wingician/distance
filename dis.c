@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#define MAXVEX 100          /* 定义最大顶点数 */
 typedef char VertextType; /* 定义顶点的类型 */
 typedef int EdgeType;     /* 定义权（也就是距离）的类型 */
-#define MAXVEX 100          /* 定义最大顶点数 */
+typedef int Pathmatirx[MAXVEX];
+typedef int ShortPathTable[MAXVEX];
+
 
 /*创建一个邻接矩阵的结构*/
 typedef struct
@@ -35,65 +38,43 @@ void CreateMGrapth( MGraph *G)
 
 }
 
-/*Prim 算法生成最小生成树*/
-void FindTree(MGraph G,int inDis)
-{
-    int sumDis,diffDis,newDiff,i,j,k;
-    sumDis = 0;
-    diffDis = 9999;
-    newDiff = 0;
-    MGraph tmpG;
-    for(i = 0;i< G.numVertexes;i++)
-    {
-        k = i;
-        tmpG = G;
-        for(j = 0;j< G.numVertexes;j++)
-        {
-            if (tmpG.arc[k][j]!=0)
-            {
-                sumDis += tmpG.arc[k][j];
-                tmpG.arc[k][j] = 0;
-                printf("(%d,%d)",k,j);
-                printf("G.arc=%d",G.arc[k][j]);
-                printf("tmpG.arc=%d \n",tmpG.arc[k][j]);
-                if(j == G.numVertexes-1)
-                {
-                    tmpG = G;
-                    sumDis = 0;
-                    newDiff = labs(inDis-sumDis);
-                    if(newDiff < diffDis)
-                    {
-                        diffDis = newDiff;
-                        printf("total distance=%d,start next.\n",sumDis);
-                    }
-                }else{
-                    k=j;
-                    j=1;
-                }
-            }
-         }
-    }
-}
-
-typedef int Pathmatirx[MAXVEX];
-typedef int ShortPathTable[MAXVEX];
-
-void ShorttestPath(MGraph G, int v0,Pathmatirx *P,ShortPathTable *D)
+void ShorttestPath(MGraph G)
 {
     int v,w,k,min;
+    int v0 = 0;
+    Pathmatirx P;
+    ShortPathTable D;
     int finale[MAXVEX];
     for(v=0;v<G.numVertexes;v++)
     {
         finale[v] = 0;
-        (*D)[v] = G.matirx[v0][v];
-        (*P)[v] = 0;
+        D[v] = G.arc[v0][v];
+        P[v] = 0;
     }
-    (*D)[v0] = 0;
+    D[v0] = 0;
     finale[v0] = 1;
 
     for(v=1;v<G.numVertexes;v++)
     {
-    /*此下面未写完。打算将把此程序改写成python*/
+        min = 999;
+        for(w=0;w<G.numVertexes;w++)
+        {
+            if(!finale[w] && D[w]<min)
+            {
+                k=w;
+                min=D[w];
+            }
+        }
+        finale[k] = 1;
+        for(w=0;w<G.numVertexes;w++)
+        {
+            if(!finale[w] && (min+G.arc[k][w]<D[w]))
+            {
+                D[w] = min + G.arc[k][w];
+                P[w] = k;
+            }
+        }
+    }
 }
 
 int main()
@@ -103,6 +84,8 @@ int main()
     scanf("%d",&inDistance);
     MGraph MGraph_1;
     CreateMGrapth(&MGraph_1);
-    //FindTree(MGraph_1,inDistance);
+    Pathmatirx P1;
+    ShortPathTable D1;
+    ShorttestPath(MGraph_1);
 }
 
